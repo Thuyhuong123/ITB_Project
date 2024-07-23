@@ -1,3 +1,39 @@
+---- Find and handle outliers----
+WITH abc AS (
+    SELECT
+        q1 - 1.5 * iqr AS min,
+        q3 + 1.5 * iqr AS max
+    FROM (
+        SELECT
+            percentile_cont(0.25) WITHIN GROUP (ORDER BY "sales") AS q1,
+            percentile_cont(0.75) WITHIN GROUP (ORDER BY "sales") AS q3,
+            percentile_cont(0.75) WITHIN GROUP (ORDER BY "sales") - percentile_cont(0.25) 
+	WITHIN GROUP (ORDER BY "sales") AS iqr
+        FROM public.itblogistics
+    ) AS a
+)
+, twt_outliers AS (
+SELECT * FROM public.itblogistics
+WHERE "sales" < (SELECT min FROM abc)
+   OR "sales" > (SELECT max FROM abc)
+	)
+UPDATE public.itblogistics
+SET sales = (SELECT AVG(sales)
+FROM public.itblogistics)
+WHERE sales IN (SELECT sales FROM twt_outliers)
+-------EDA process------
+--- View sample data---
+SELECT * FROM
+public.itblogistics
+LIMIT 10
+---Count the number of rows---
+SELECT COUNT(*) FROM public.itblogistics ---180519 records---
+SELECT 
+    COUNT(DISTINCT order_id) AS unique_orders,
+    COUNT(DISTINCT customer_id) AS unique_customers,
+    COUNT(DISTINCT category_id) AS unique_product_categories
+FROM public.itblogistics;
+
 ----Calculate the cumulative percentage of total sales contributed by each product category-----
 WITH twt_total_sales AS (
     SELECT 
@@ -97,6 +133,5 @@ SELECT
 FROM late_shipments
 GROUP BY department_name
 ORDER BY late_shipments_rate DESC
-
 
 
