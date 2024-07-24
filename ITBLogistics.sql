@@ -33,7 +33,131 @@ SELECT
     COUNT(DISTINCT customer_id) AS unique_customers,
     COUNT(DISTINCT category_id) AS unique_product_categories
 FROM public.itblogistics;
+--- Summary Statistics for Numeric Columns---
+SELECT 
+    'days_for_shipping_real' AS column_name,
+    ROUND(AVG(days_for_shipping_real),2) AS mean_value,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY days_for_shipping_real) AS median_value,
+    ROUND(STDDEV(days_for_shipping_real),2) AS std_dev_value,
+    MIN(days_for_shipping_real) AS min_value,
+    MAX(days_for_shipping_real) AS max_value,
+    COUNT(days_for_shipping_real) AS count_value
+FROM 
+public.itblogistics
+	
+UNION ALL
+SELECT 
+    'days_for_shipment_scheduled' AS column_name,
+    ROUND(AVG(days_for_shipment_scheduled),2) AS mean_value,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY days_for_shipment_scheduled) AS median_value,
+    ROUND(STDDEV(days_for_shipment_scheduled),2) AS std_dev_value,
+    MIN(days_for_shipment_scheduled) AS min_value,
+    MAX(days_for_shipment_scheduled) AS max_value,
+    COUNT(days_for_shipment_scheduled) AS count_value
+FROM 
+public.itblogistics
 
+UNION ALL
+SELECT 
+    'product_price' AS column_name,
+    ROUND(AVG(product_price),2) AS mean_value,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY product_price) AS median_value,
+   ROUND(STDDEV(product_price),2) AS std_dev_value,
+    MIN(product_price) AS min_value,
+    MAX(product_price) AS max_value,
+    COUNT(product_price) AS count_value
+FROM 
+    public.itblogistics
+
+UNION ALL
+
+SELECT 
+    'sales' AS column_name,
+    ROUND(AVG(sales),2) AS mean_value,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY sales) AS median_value,
+    ROUND(STDDEV(sales),2) AS std_dev_value,
+    MIN(sales) AS min_value,
+    MAX(sales) AS max_value,
+    COUNT(sales) AS count_value
+FROM 
+    public.itblogistics
+UNION ALL
+
+SELECT 
+    'sales_per_customer' AS column_name,
+    ROUND(AVG(sales_per_customer),2) AS mean_value,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY sales_per_customer) AS median_value,
+    ROUND(STDDEV(sales_per_customer),2) AS std_dev_value,
+    MIN(sales_per_customer) AS min_value,
+    MAX(sales_per_customer) AS max_value,
+    COUNT(sales_per_customer) AS count_value
+FROM 
+    public.itblogistics
+	
+UNION ALL
+SELECT 
+    'benefit_per_order' AS column_name,
+    ROUND(AVG(benefit_per_order),2) AS mean_value,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY benefit_per_order) AS median_value,
+    ROUND(STDDEV(benefit_per_order),2) AS std_dev_value,
+    MIN(benefit_per_order) AS min_value,
+    MAX(benefit_per_order) AS max_value,
+    COUNT(benefit_per_order) AS count_value
+FROM 
+public.itblogistics
+	
+---Distru=ibution of categorical variables---
+SELECT 
+	late_delivery_risk,
+	COUNT(*) AS count,
+	ROUND(COUNT(*)*100.0/(SELECT COUNT(*) FROM public.itblogistics),2) AS percentage
+FROM public.itblogistics
+GROUP BY late_delivery_risk;
+--- Distribution of shipping mode by late delivery risk---
+SELECT 
+	shipping_mode,
+	late_delivery_risk, 
+	COUNT(*) AS count,
+	ROUND(COUNT(*)*100.0/(SELECT COUNT(*) FROM public.itblogistics),2) AS percentage
+FROM public.itblogistics
+GROUP BY shipping_mode,
+	late_delivery_risk
+--- Distribution of product category by late delivery risk---
+SELECT 
+	category_name,
+	late_delivery_risk, 
+	COUNT(*) AS count,
+	ROUND(COUNT(*)*100.0/(SELECT COUNT(*) FROM public.itblogistics),2) AS percentage
+FROM public.itblogistics
+GROUP BY category_name,
+	late_delivery_risk
+--- Distribution of department by late delivery risk---
+SELECT 
+	department_name,
+	late_delivery_risk, 
+	COUNT(*) AS count,
+	ROUND(COUNT(*)*100.0/(SELECT COUNT(*) FROM public.itblogistics),2) AS percentage
+FROM public.itblogistics
+GROUP BY department_name,
+	late_delivery_risk
+--- Distribution of department by late delivery risk---
+SELECT 
+	order_region,
+	late_delivery_risk, 
+	COUNT(*) AS count,
+	ROUND(COUNT(*)*100.0/(SELECT COUNT(*) FROM public.itblogistics),2) AS percentage
+FROM public.itblogistics
+GROUP BY order_region,
+	late_delivery_risk
+--- Distribution of department by late delivery risk---
+SELECT 
+	order_region,
+	late_delivery_risk, 
+	COUNT(*) AS count,
+	ROUND(COUNT(*)*100.0/(SELECT COUNT(*) FROM public.itblogistics),2) AS percentage
+FROM public.itblogistics
+GROUP BY order_region,
+	late_delivery_risk
 ----Calculate the cumulative percentage of total sales contributed by each product category-----
 WITH twt_total_sales AS (
     SELECT 
