@@ -294,9 +294,8 @@ GROUP BY year, month
 ORDER BY year, month;
 
 	
-
-
 ----Calculate the cumulative percentage of total sales contributed by each product category-----
+
 WITH twt_total_sales AS (
     SELECT 
         category_name,
