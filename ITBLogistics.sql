@@ -319,38 +319,7 @@ SELECT
     total_sales,
     ROUND((100.0 * cumulative_sales / (SELECT grand_sales FROM grand_sales)), 2) || '%' AS cumulative_percent
 FROM cumulative_sales;
-----Classify the Order Regions based on the occurrence of late shipments----
-WITH late_shipments AS
-	(SELECT
-	order_region,
-	shipping_mode,
-	CASE WHEN days_for_shipping_real > days_for_shipment_scheduled THEN 1 
-	ELSE 0 END AS late_shipments
-FROM public.itblogistics)
-SELECT 
-	order_region,
-	COUNT(*) AS total_shipments,
-	SUM(late_shipments) as late_shipments,
-	ROUND((1.00*SUM(late_shipments)/COUNT(*)),2) AS late_shipment_rate
-FROM late_shipments
-GROUP BY order_region
-ORDER BY late_shipment_rate 
----- Select the best Shipping Mode that consistently delivers shipments-----
-WITH late_shipments AS
-	(SELECT
-	order_region,
-	shipping_mode,
-	CASE WHEN days_for_shipping_real > days_for_shipment_scheduled THEN 1 
-	ELSE 0 END AS late_shipments
-FROM public.itblogistics)
-SELECT 
-	order_region,
-	shipping_mode,
-	COUNT(*) AS total_shipments,
-	ROUND(((SUM(late_shipments))*1.0/COUNT(*)),2) AS late_shipments_rate
-FROM late_shipments
-GROUP BY shipping_mode, order_region
-ORDER BY order_region, late_shipments_rate
+
 ----- Common factors associated with orders that have a higher likelihood of experiencing delays in delivery----
 WITH late_shipments AS (
 	SELECT *, 
